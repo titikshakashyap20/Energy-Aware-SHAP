@@ -15,24 +15,18 @@ import numpy as np
 from joblib import Parallel, delayed
 import ray
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS_DIR = PROJECT_ROOT / "scripts"
+
+sys.path.insert(0, str(SCRIPTS_DIR))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from bench_utils import make_chunks
 from explain import explain_chunk
 from data_loading import prepare_data
 from models import train_random_forest, train_xgboost
 
 
-# --- TEMPORARY: delete this function and replace the import below with
-# --- `from bench_utils import make_chunks` once Member C's harness lands.
-def _make_chunks(rows, n_cores):
-    """Split a DataFrame into n_cores roughly-equal row chunks."""
-    if n_cores <= 1:
-        return [rows]
-    idx_splits = np.array_split(np.arange(len(rows)), n_cores)
-    return [rows.iloc[idx] for idx in idx_splits if len(idx) > 0]
-
-
-make_chunks = _make_chunks  # single call site below — swap this one line later
 
 
 def _worker(chunk, model):

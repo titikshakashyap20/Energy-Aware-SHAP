@@ -1,0 +1,2 @@
+n_rows,mean_elapsed_seconds,std_elapsed_seconds,mean_energy_kwh,std_energy_kwh,mean_energy_joules,std_energy_joules,runs,mean_elapsed_minutes
+100,51.846580190194395,59.46203244411153,0.0002976291681217892,0.0003197260613460133,1071.4650052385384,1151.0138208457065,612,0.8641096698365732
