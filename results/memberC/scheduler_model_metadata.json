@@ -1,0 +1,99 @@
+{
+  "selected_model": "RandomForest",
+  "selection_reason": "RandomForest lowers held-out mean EDP regret by 0.0836 (> margin 0.02).",
+  "selection_criterion": "min held-out mean EDP regret; RF must beat DT by > 0.02",
+  "target": "log10(median_edp_joule_seconds)",
+  "feature_columns": [
+    "n_rows",
+    "n_features",
+    "feature_count",
+    "background_size",
+    "n_cores",
+    "track=kernelshap",
+    "track=tree",
+    "model=LogisticRegression",
+    "model=RandomForest",
+    "model=SVM-RBF",
+    "model=XGBoost",
+    "strategy=serial",
+    "strategy=multiprocessing",
+    "strategy=threading",
+    "strategy=joblib",
+    "strategy=ray"
+  ],
+  "raw_input_columns": [
+    "track",
+    "model",
+    "n_rows",
+    "n_features",
+    "feature_count",
+    "background_size",
+    "n_cores",
+    "strategy"
+  ],
+  "hyperparameters": {
+    "n_estimators": 300,
+    "max_depth": 8,
+    "min_samples_leaf": 3,
+    "max_features": 0.6,
+    "bootstrap": true,
+    "random_state": 42,
+    "n_jobs": 1
+  },
+  "all_model_hyperparameters": {
+    "DecisionTree": {
+      "max_depth": 6,
+      "min_samples_split": 10,
+      "min_samples_leaf": 5,
+      "random_state": 42
+    },
+    "RandomForest": {
+      "n_estimators": 300,
+      "max_depth": 8,
+      "min_samples_leaf": 3,
+      "max_features": 0.6,
+      "bootstrap": true,
+      "random_state": 42,
+      "n_jobs": 1
+    }
+  },
+  "versions": {
+    "python": "3.13.14",
+    "scikit-learn": "1.9.1",
+    "numpy": "2.5.3",
+    "pandas": "3.0.5",
+    "joblib": "1.6.0"
+  },
+  "random_state": 42,
+  "trained_on_workloads": [
+    "kernelshap|LogisticRegression|15|100|100",
+    "kernelshap|LogisticRegression|15|100|25",
+    "kernelshap|LogisticRegression|15|100|50",
+    "kernelshap|LogisticRegression|30|100|100",
+    "kernelshap|LogisticRegression|30|100|25",
+    "kernelshap|LogisticRegression|30|100|50",
+    "kernelshap|SVM-RBF|15|100|100",
+    "kernelshap|SVM-RBF|15|100|25",
+    "kernelshap|SVM-RBF|15|100|50",
+    "kernelshap|SVM-RBF|30|100|100",
+    "kernelshap|SVM-RBF|30|100|25",
+    "kernelshap|SVM-RBF|30|100|50",
+    "tree|RandomForest|1000",
+    "tree|RandomForest|10000",
+    "tree|RandomForest|48842",
+    "tree|XGBoost|1000",
+    "tree|XGBoost|10000",
+    "tree|XGBoost|48842"
+  ],
+  "n_training_rows": 324,
+  "tiebreak_rank": {
+    "joblib": 0,
+    "threading": 1,
+    "serial": 2,
+    "multiprocessing": 3,
+    "ray": 4
+  },
+  "availability_rule_verified": true,
+  "validation": "18-fold Leave-One-Workload-Out (scheduler_splits.csv); the saved estimator is refit on all 18 workloads and has NO held-out estimate of its own \u2014 report the LOWO numbers.",
+  "claim_scope": "Generalisation to held-out workloads within the evaluated benchmark space only."
+}

@@ -1,0 +1,3 @@
+track,total_rows,duplicate_run_ids,duplicate_logical_rows,missing_required_field_values,invalid_time_rows,invalid_energy_rows,failed_or_invalid_runs,unique_configurations,unique_workloads,expected_repeats,configs_with_wrong_repeat_count,rows_passing_all_checks,additivity_check_failures
+memberA_tree,360,0,0,0,0,0,0,120,6,3,0,360,
+memberB_kernelshap,612,0,0,0,0,0,0,204,12,3,0,612,0.0

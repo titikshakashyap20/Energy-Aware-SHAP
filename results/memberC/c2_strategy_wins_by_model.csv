@@ -1,0 +1,5 @@
+model,joblib,multiprocessing,ray,serial,threading
+LogisticRegression,5,0,0,1,0
+RandomForest,3,0,0,0,0
+SVM-RBF,0,1,1,0,4
+XGBoost,1,0,0,2,0

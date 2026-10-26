@@ -1,0 +1,9 @@
+dimension_type,dimension_value,pareto_count,total_count,pareto_fraction
+overall,all,31,324,0.09567901234567901
+track,kernelshap,20,204,0.09803921568627451
+track,tree,11,120,0.09166666666666666
+strategy,joblib,10,72,0.1388888888888889
+strategy,multiprocessing,4,72,0.05555555555555555
+strategy,ray,2,72,0.027777777777777776
+strategy,serial,6,36,0.16666666666666666
+strategy,threading,9,72,0.125

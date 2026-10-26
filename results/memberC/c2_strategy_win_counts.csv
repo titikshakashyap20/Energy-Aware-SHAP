@@ -1,0 +1,6 @@
+strategy,workloads_won
+joblib,9
+threading,4
+serial,3
+multiprocessing,1
+ray,1
