@@ -1,0 +1,293 @@
+{
+  "generated_utc": "2026-10-28T09:27:29.080134+00:00",
+  "python_version": "3.12.3",
+  "provenance_sha256": {
+    "memberA": "993a6835d3e185197f00c48cea57e7a009a2bea0df01c8693ccbee35d04bb6c1",
+    "memberB": "f30924946fc68f69b3f1588d90a3e3a0f7c573f65cd6016c3c8c57ab4bf5bd2c",
+    "unified": "1be8636e85617b60e24e08fe014bf653b741656155dace3d309dc9b6742790a9"
+  },
+  "benchmark_counts": {
+    "valid_runs": 972,
+    "run_counts_by_track": {
+      "memberA": 360,
+      "memberB": 612
+    },
+    "configurations_by_track": {
+      "memberA": 120,
+      "memberB": 204
+    },
+    "workloads": 18,
+    "workloads_by_track": {
+      "kernelshap": 12,
+      "tree": 6
+    }
+  },
+  "scheduler_vs_joblib": {
+    "n_workloads": 18,
+    "n_zero_differences": 9,
+    "n_nonzero_differences": 9,
+    "mean_scheduler_regret": 0.16401770634327298,
+    "mean_joblib_regret": 0.1600598860939301,
+    "mean_difference_scheduler_minus_joblib": 0.003957820249342876,
+    "difference_ci95_percentile_lower": -0.016026183316008486,
+    "difference_ci95_percentile_upper": 0.029438611173831144,
+    "wilcoxon_statistic": 39.0,
+    "wilcoxon_p_value": 1.0,
+    "zero_difference_handling": "Wilcoxon zero_method=wilcox: omit zero differences",
+    "ties_handling": "average ranks for tied absolute differences; two-sided asymptotic normal approximation",
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20261028,
+    "bootstrap_interval": "percentile 2.5th and 97.5th quantiles; paired workloads resampled as units",
+    "interpretation": "Inference is conditional on these held-out workloads and nested evaluation; nonsignificance is not equivalence."
+  },
+  "nested_scheduler_overall": {
+    "n_decision_points": 72.0,
+    "n_oracle_hits": 34.0,
+    "oracle_hit_rate": 0.4722222222222222,
+    "mean_edp_regret": 0.1640177063432729,
+    "median_edp_regret": 0.0221016745415448,
+    "mean_edp_ratio_to_oracle": 1.164017706343273,
+    "geomean_edp_ratio_to_oracle": 1.1249458927476368
+  },
+  "fixed_strategy_estimates": [
+    {
+      "strategy": "joblib",
+      "mean_regret": 0.1600598860939301,
+      "regret_ci_lower": 0.06251627214590005,
+      "regret_ci_upper": 0.3145023516269986,
+      "mean_hit_rate": 0.4583333333333333,
+      "hit_rate_ci_lower": 0.2777777777777778,
+      "hit_rate_ci_upper": 0.6388888888888888,
+      "n_eligible_workloads": 18,
+      "n_observations": 72,
+      "bootstrap_resamples": 10000,
+      "random_seed": 20261028,
+      "regret_definition": "measured median EDP / observed oracle EDP - 1, averaged over available core decision points within workload",
+      "hit_rate_definition": "fraction of available workload/core decision points where strategy equals observed EDP-minimizing strategy"
+    },
+    {
+      "strategy": "multiprocessing",
+      "mean_regret": 21.58288667449028,
+      "regret_ci_lower": 0.22563715772458642,
+      "regret_ci_upper": 63.47540737092284,
+      "mean_hit_rate": 0.08333333333333333,
+      "hit_rate_ci_lower": 0.027777777777777776,
+      "hit_rate_ci_upper": 0.1527777777777778,
+      "n_eligible_workloads": 18,
+      "n_observations": 72,
+      "bootstrap_resamples": 10000,
+      "random_seed": 20261029,
+      "regret_definition": "measured median EDP / observed oracle EDP - 1, averaged over available core decision points within workload",
+      "hit_rate_definition": "fraction of available workload/core decision points where strategy equals observed EDP-minimizing strategy"
+    },
+    {
+      "strategy": "ray",
+      "mean_regret": 54.995527952891536,
+      "regret_ci_lower": 1.061891231535387,
+      "regret_ci_upper": 160.9405154011325,
+      "mean_hit_rate": 0.06944444444444445,
+      "hit_rate_ci_lower": 0.0,
+      "hit_rate_ci_upper": 0.16666666666666666,
+      "n_eligible_workloads": 18,
+      "n_observations": 72,
+      "bootstrap_resamples": 10000,
+      "random_seed": 20261030,
+      "regret_definition": "measured median EDP / observed oracle EDP - 1, averaged over available core decision points within workload",
+      "hit_rate_definition": "fraction of available workload/core decision points where strategy equals observed EDP-minimizing strategy"
+    },
+    {
+      "strategy": "serial",
+      "mean_regret": 0.9483819580645557,
+      "regret_ci_lower": 0.16443697751100053,
+      "regret_ci_upper": 1.8608383868191913,
+      "mean_hit_rate": 0.18055555555555555,
+      "hit_rate_ci_lower": 0.041666666666666664,
+      "hit_rate_ci_upper": 0.3611111111111111,
+      "n_eligible_workloads": 18,
+      "n_observations": 36,
+      "bootstrap_resamples": 10000,
+      "random_seed": 20261031,
+      "regret_definition": "measured median EDP / observed oracle EDP - 1, averaged over available core decision points within workload",
+      "hit_rate_definition": "fraction of available workload/core decision points where strategy equals observed EDP-minimizing strategy"
+    },
+    {
+      "strategy": "threading",
+      "mean_regret": 1.3033700101554695,
+      "regret_ci_lower": 0.5622107609249171,
+      "regret_ci_upper": 2.1830126938354817,
+      "mean_hit_rate": 0.25,
+      "hit_rate_ci_lower": 0.1111111111111111,
+      "hit_rate_ci_upper": 0.4027777777777778,
+      "n_eligible_workloads": 18,
+      "n_observations": 72,
+      "bootstrap_resamples": 10000,
+      "random_seed": 20261032,
+      "regret_definition": "measured median EDP / observed oracle EDP - 1, averaged over available core decision points within workload",
+      "hit_rate_definition": "fraction of available workload/core decision points where strategy equals observed EDP-minimizing strategy"
+    }
+  ],
+  "sensitivity": {
+    "matched_comparisons": 216,
+    "winner_flips": 27,
+    "breakdown": [
+      {
+        "track": "kernelshap",
+        "n_cores": 1,
+        "matched_comparisons": 36,
+        "winner_flips": 3,
+        "winner_flip_percent": 8.333333333333332,
+        "original_winner_counts_json": "{\"joblib\": 18, \"ray\": 6, \"serial\": 4, \"threading\": 8}",
+        "sensitivity_winner_counts_json": "{\"joblib\": 17, \"ray\": 5, \"serial\": 6, \"threading\": 8}"
+      },
+      {
+        "track": "kernelshap",
+        "n_cores": 2,
+        "matched_comparisons": 36,
+        "winner_flips": 4,
+        "winner_flip_percent": 11.11111111111111,
+        "original_winner_counts_json": "{\"joblib\": 8, \"multiprocessing\": 9, \"ray\": 8, \"threading\": 11}",
+        "sensitivity_winner_counts_json": "{\"joblib\": 10, \"multiprocessing\": 10, \"ray\": 5, \"threading\": 11}"
+      },
+      {
+        "track": "kernelshap",
+        "n_cores": 4,
+        "matched_comparisons": 36,
+        "winner_flips": 4,
+        "winner_flip_percent": 11.11111111111111,
+        "original_winner_counts_json": "{\"joblib\": 13, \"multiprocessing\": 4, \"ray\": 7, \"threading\": 12}",
+        "sensitivity_winner_counts_json": "{\"joblib\": 15, \"multiprocessing\": 3, \"ray\": 6, \"threading\": 12}"
+      },
+      {
+        "track": "kernelshap",
+        "n_cores": 8,
+        "matched_comparisons": 36,
+        "winner_flips": 6,
+        "winner_flip_percent": 16.666666666666664,
+        "original_winner_counts_json": "{\"joblib\": 14, \"multiprocessing\": 7, \"ray\": 1, \"threading\": 14}",
+        "sensitivity_winner_counts_json": "{\"joblib\": 19, \"multiprocessing\": 2, \"threading\": 15}"
+      },
+      {
+        "track": "tree",
+        "n_cores": 1,
+        "matched_comparisons": 18,
+        "winner_flips": 4,
+        "winner_flip_percent": 22.22222222222222,
+        "original_winner_counts_json": "{\"joblib\": 8, \"multiprocessing\": 1, \"serial\": 5, \"threading\": 4}",
+        "sensitivity_winner_counts_json": "{\"joblib\": 11, \"multiprocessing\": 1, \"serial\": 3, \"threading\": 3}"
+      },
+      {
+        "track": "tree",
+        "n_cores": 2,
+        "matched_comparisons": 18,
+        "winner_flips": 3,
+        "winner_flip_percent": 16.666666666666664,
+        "original_winner_counts_json": "{\"joblib\": 6, \"multiprocessing\": 3, \"serial\": 8, \"threading\": 1}",
+        "sensitivity_winner_counts_json": "{\"joblib\": 4, \"multiprocessing\": 4, \"ray\": 1, \"serial\": 7, \"threading\": 2}"
+      },
+      {
+        "track": "tree",
+        "n_cores": 4,
+        "matched_comparisons": 18,
+        "winner_flips": 3,
+        "winner_flip_percent": 16.666666666666664,
+        "original_winner_counts_json": "{\"joblib\": 11, \"serial\": 5, \"threading\": 2}",
+        "sensitivity_winner_counts_json": "{\"joblib\": 9, \"multiprocessing\": 2, \"serial\": 6, \"threading\": 1}"
+      },
+      {
+        "track": "tree",
+        "n_cores": 8,
+        "matched_comparisons": 18,
+        "winner_flips": 0,
+        "winner_flip_percent": 0.0,
+        "original_winner_counts_json": "{\"joblib\": 9, \"multiprocessing\": 1, \"serial\": 8}",
+        "sensitivity_winner_counts_json": "{\"joblib\": 9, \"multiprocessing\": 1, \"serial\": 8}"
+      }
+    ],
+    "flip_details_count": 27,
+    "formula": "adjusted_energy = measured_total_energy_j - 10 W * runtime_s; adjusted EDP = adjusted_energy * runtime_s; nonpositive adjusted energy excluded from adjusted winner ranking",
+    "warning": "Hypothetical sensitivity only; not measured CPU-only energy."
+  },
+  "energy_measurement_limitations": "Historical total energy has heterogeneous/limited component diagnostics; GPU energy was unsupported/unavailable in relevant measurements and is not treated as measured zero.",
+  "inference_limit": "18 held-out workloads in one nested LOWO evaluation; folds are not independent retrainings; results do not establish general scheduler superiority or equivalence.",
+  "raw_quality": {
+    "memberA": {
+      "rows": 360,
+      "missing_cells": 360,
+      "duplicate_run_ids": 0,
+      "failed_or_invalid": null
+    },
+    "memberB": {
+      "rows": 612,
+      "missing_cells": 7344,
+      "duplicate_run_ids": 0,
+      "failed_or_invalid": 0
+    },
+    "unified": {
+      "rows": 972,
+      "missing_cells": 2520,
+      "duplicate_run_ids": 0,
+      "failed_or_invalid": 0
+    },
+    "audit_report": [
+      {
+        "track": "memberA_tree",
+        "total_rows": 360,
+        "duplicate_run_ids": 0,
+        "duplicate_logical_rows": 0,
+        "missing_required_field_values": 0,
+        "invalid_time_rows": 0,
+        "invalid_energy_rows": 0,
+        "failed_or_invalid_runs": 0,
+        "unique_configurations": 120,
+        "unique_workloads": 6,
+        "expected_repeats": 3,
+        "configs_with_wrong_repeat_count": 0,
+        "rows_passing_all_checks": 360,
+        "additivity_check_failures": null
+      },
+      {
+        "track": "memberB_kernelshap",
+        "total_rows": 612,
+        "duplicate_run_ids": 0,
+        "duplicate_logical_rows": 0,
+        "missing_required_field_values": 0,
+        "invalid_time_rows": 0,
+        "invalid_energy_rows": 0,
+        "failed_or_invalid_runs": 0,
+        "unique_configurations": 204,
+        "unique_workloads": 12,
+        "expected_repeats": 3,
+        "configs_with_wrong_repeat_count": 0,
+        "rows_passing_all_checks": 612,
+        "additivity_check_failures": 0.0
+      }
+    ]
+  },
+  "expected_count_checks": {
+    "valid_runs": {
+      "expected_reference": 972,
+      "actual": 972,
+      "matches": true
+    },
+    "memberA_runs": {
+      "expected_reference": 360,
+      "actual": 360,
+      "matches": true
+    },
+    "memberB_runs": {
+      "expected_reference": 612,
+      "actual": 612,
+      "matches": true
+    },
+    "configurations": {
+      "expected_reference": 324,
+      "actual": 324,
+      "matches": true
+    },
+    "workloads": {
+      "expected_reference": 18,
+      "actual": 18,
+      "matches": true
+    }
+  }
+}

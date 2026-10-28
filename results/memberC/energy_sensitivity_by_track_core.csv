@@ -1,0 +1,9 @@
+track,n_cores,matched_comparisons,winner_flips,winner_flip_percent,original_winner_counts_json,sensitivity_winner_counts_json
+kernelshap,1,36,3,8.333333333333332,"{""joblib"": 18, ""ray"": 6, ""serial"": 4, ""threading"": 8}","{""joblib"": 17, ""ray"": 5, ""serial"": 6, ""threading"": 8}"
+kernelshap,2,36,4,11.11111111111111,"{""joblib"": 8, ""multiprocessing"": 9, ""ray"": 8, ""threading"": 11}","{""joblib"": 10, ""multiprocessing"": 10, ""ray"": 5, ""threading"": 11}"
+kernelshap,4,36,4,11.11111111111111,"{""joblib"": 13, ""multiprocessing"": 4, ""ray"": 7, ""threading"": 12}","{""joblib"": 15, ""multiprocessing"": 3, ""ray"": 6, ""threading"": 12}"
+kernelshap,8,36,6,16.666666666666664,"{""joblib"": 14, ""multiprocessing"": 7, ""ray"": 1, ""threading"": 14}","{""joblib"": 19, ""multiprocessing"": 2, ""threading"": 15}"
+tree,1,18,4,22.22222222222222,"{""joblib"": 8, ""multiprocessing"": 1, ""serial"": 5, ""threading"": 4}","{""joblib"": 11, ""multiprocessing"": 1, ""serial"": 3, ""threading"": 3}"
+tree,2,18,3,16.666666666666664,"{""joblib"": 6, ""multiprocessing"": 3, ""serial"": 8, ""threading"": 1}","{""joblib"": 4, ""multiprocessing"": 4, ""ray"": 1, ""serial"": 7, ""threading"": 2}"
+tree,4,18,3,16.666666666666664,"{""joblib"": 11, ""serial"": 5, ""threading"": 2}","{""joblib"": 9, ""multiprocessing"": 2, ""serial"": 6, ""threading"": 1}"
+tree,8,18,0,0.0,"{""joblib"": 9, ""multiprocessing"": 1, ""serial"": 8}","{""joblib"": 9, ""multiprocessing"": 1, ""serial"": 8}"

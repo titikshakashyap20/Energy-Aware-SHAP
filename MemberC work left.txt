@@ -1,0 +1,356 @@
+# Member C: Statistical Validation, Research Analysis and Reproducibility
+
+## Project: Energy-Aware Parallel Computation of SHAP Explanations
+
+### Objective
+
+Complete the statistical validation and reproducibility stage of Member C. The goal is to establish whether the learned scheduler provides a meaningful improvement over fixed parallel strategies, quantify uncertainty in the experimental results, generate publication-quality figures, and ensure that every numerical claim in the paper can be reproduced directly from the project data.
+
+The existing Member A and Member B experiments and Member C analyses have already been completed. **Do not rerun the full benchmark experiments unless a specific problem makes it necessary and approval is obtained.** Reuse the existing CSVs, evaluation outputs, scripts and trained model.
+
+---
+
+## Task 1 — Statistical Significance: Learned Scheduler vs. Joblib
+
+**Priority: Highest**
+
+Determine whether the learned scheduler performs meaningfully differently from the Joblib baseline using the existing nested Leave-One-Workload-Out (LOWO) evaluation.
+
+### Requirements
+
+1. Load `results/memberC/scheduler_nested_evaluation.csv` and inspect the evaluation protocol and relevant scripts before calculating any statistics.
+2. Identify the correct regret metric, its definition, the workload identifiers and how scheduler and Joblib results are paired.
+3. Aggregate the results to obtain one comparable regret value per workload and method, giving 18 paired workload-level observations if all 18 workloads have valid pairs.
+4. Define the difference consistently as:
+
+   `difference = scheduler regret - Joblib regret`
+
+   Positive differences indicate higher regret for the scheduler; negative differences indicate lower regret.
+5. Compute the mean paired difference across workloads.
+6. Run a paired bootstrap with 10,000 resamples, resampling the 18 workloads as paired units. Calculate and report a 95% confidence interval for the mean difference. Use a fixed random seed and document the interval method.
+7. Run a two-sided Wilcoxon signed-rank test on the 18 paired workload-level differences. Report the test statistic, p-value, sample size and the handling of zero differences and ties.
+8. Report the mean regret of each method alongside the mean paired difference, confidence interval and p-value.
+9. Save the workload-level paired data and a machine-readable statistical summary.
+
+### Critical statistical requirements
+
+- **Resample by workload, not by individual decision point.** The 72 scheduler decision points are not 72 independent workloads; observations within a workload may be correlated.
+- Use the same evaluation protocol for both methods.
+- Do not treat the 18 LOWO folds as 18 independent retrainings of the entire development process. Explain the limits of inference from this evaluation design.
+- Do not interpret a non-significant p-value as proof of equivalence.
+- Do not claim that the scheduler outperforms Joblib unless the statistical results support that conclusion.
+- Keep the paired workload-level values available for auditing and reproduction.
+
+### Expected outputs
+
+- `results/memberC/scheduler_joblib_significance.csv`
+- `results/memberC/scheduler_joblib_paired_differences.csv`
+- A concise report containing the mean difference, 95% confidence interval, Wilcoxon statistic, p-value and interpretation.
+
+---
+
+## Task 2 — Fixed-Strategy Baselines with Confidence Intervals
+
+Calculate comparable workload-level performance estimates for the five fixed strategies:
+
+- Serial
+- Multiprocessing
+- Threading
+- Joblib
+- Ray
+
+### Requirements
+
+1. Inspect `results/memberC/fixed_baseline_evaluation.csv`, `results/memberC/scheduler_nested_evaluation.csv` and the associated evaluation scripts.
+2. Identify the original definitions of regret and hit rate. Preserve those definitions rather than introducing a different metric without justification.
+3. Calculate mean regret and hit rate for each fixed strategy using the same eligible workload-level evaluation units and comparison protocol.
+4. Compute bootstrap 95% confidence intervals for both metrics. Use 10,000 resamples, a fixed random seed and workload-level resampling.
+5. Handle missing strategy configurations honestly. For example, do not invent Serial results at core counts where Serial was not evaluated.
+6. Record the number of eligible workloads and observations contributing to each estimate.
+7. Clearly distinguish the benchmark-optimal strategy, the fixed-baseline strategy and the learned scheduler.
+
+### Expected output
+
+`results/memberC/fixed_strategy_confidence_intervals.csv`
+
+Include at least:
+
+- Strategy
+- Mean regret
+- Regret CI lower and upper bounds
+- Mean hit rate
+- Hit-rate CI lower and upper bounds
+- Number of eligible workloads
+- Number of observations
+- Bootstrap resample count
+- Random seed
+- Metric definitions or references to their documented definitions
+
+The report must explain that the benchmark-optimal strategy is calculated from observed results and is a comparison reference, not a strategy that can be assumed to be known in advance for a new workload.
+
+---
+
+## Task 3 — RAM Sensitivity Analysis and Winner-Flip Breakdown
+
+Extend the existing 10 W RAM sensitivity analysis.
+
+### Existing evidence
+
+The current sensitivity analysis reports 27 winner changes among 216 matched workload/core-count/repeat groups when a hypothetical 10 W RAM contribution is subtracted from total measured energy.
+
+This assumption is hypothetical. It is not a verified correction to the historical energy measurements.
+
+### Requirements
+
+1. Reuse:
+   - `results/memberC/energy_sensitivity_report.csv`
+   - `results/memberC/energy_sensitivity_winners.csv`
+   - The original Member A and Member B benchmark CSVs.
+2. Produce a table split by:
+   - Track: TreeSHAP and KernelSHAP
+   - Core count
+3. For each group, report:
+   - Number of matched comparisons
+   - Number of winner flips
+   - Winner-flip percentage
+   - Original winning strategy counts
+   - Sensitivity winning strategy counts
+4. Examine the size of the original EDP differences for comparisons where the winner changed, wherever the data supports a valid comparison. Determine whether the flips are mostly near-ties or include larger differences.
+5. Document the exact formula used for the hypothetical energy adjustment and explain how nonpositive adjusted energy is handled.
+6. Do not label adjusted values as measured CPU-only energy.
+
+### Expected outputs
+
+- `results/memberC/energy_sensitivity_by_track_core.csv`
+- `results/memberC/energy_sensitivity_flip_details.csv`
+- A short interpretation describing where flips occur and what they imply about robustness.
+
+If the current sensitivity script contains comparison or grouping issues, correct the analysis transparently and explain any differences from the existing 27/216 figure. Preserve the original report.
+
+---
+
+## Task 4 — Publication-Quality Research Figures
+
+Generate the following figures using Matplotlib. Save every figure as both a high-resolution PNG at 300 dpi and a vector PDF.
+
+### Figure 1: EDP versus core count
+
+- Show EDP as a function of core count for each applicable strategy.
+- Use separate panels for appropriate workload families or clearly defined workload groups.
+- Identify the aggregation method, such as median EDP, and show uncertainty where the available repeats support it.
+- Do not connect unrelated workloads in a way that implies a continuous trend.
+
+### Figure 2: Best-strategy heatmap
+
+- Rows: workloads.
+- Columns: evaluated core counts.
+- Cell: strategy with the lowest observed EDP for that workload/core-count combination.
+- Clearly identify unavailable combinations.
+- State that these are observed benchmark winners, not guaranteed recommendations for unseen workloads.
+
+### Figure 3: Fixed-strategy regret with confidence intervals
+
+- Plot mean regret for each fixed strategy.
+- Include the 95% bootstrap confidence intervals from Task 2.
+- Use consistent metric definitions and clearly label the scale and units.
+
+### Figure 4: Runtime versus energy
+
+- Plot runtime against energy consumption, using a consistent log scale if appropriate.
+- Distinguish strategies using a readable legend.
+- Explain which observations or aggregation levels are shown.
+- Do not imply that energy measurements include directly measured GPU energy when the GPU energy readings were unsupported.
+
+### Output requirements
+
+Store figures under `results/memberC/plots/`, with descriptive filenames such as:
+
+- `edp_vs_core_count.png` and `.pdf`
+- `best_strategy_heatmap.png` and `.pdf`
+- `fixed_strategy_regret_ci.png` and `.pdf`
+- `runtime_vs_energy.png` and `.pdf`
+
+Use clear labels, readable fonts, consistent units, meaningful legends and reproducible plotting code. Figures must be generated from the source CSVs rather than manually edited values.
+
+---
+
+## Task 5 — Single Source of Truth for All Reported Numbers
+
+Create a script that recomputes the numerical claims used in the paper directly from the underlying data and analysis outputs.
+
+### Required file
+
+`results_summary.json`
+
+### Required script
+
+For example, `scripts/memberC/build_results_summary.py`.
+
+### Required information
+
+At minimum, recompute and record:
+
+1. Total valid benchmark runs: 972, if confirmed by the source data.
+2. Member A and Member B run counts: 360 and 612, respectively, if confirmed.
+3. Total configurations: 324, with per-track counts.
+4. Total workloads: 18, with per-track counts.
+5. Validation failures, missing required values and duplicate run IDs.
+6. Number of matched sensitivity comparisons and winner flips, including the track/core-count breakdown.
+7. Fixed-strategy regret and hit-rate estimates with confidence intervals.
+8. Scheduler-versus-Joblib mean regret difference, confidence interval and Wilcoxon p-value.
+9. Existing scheduler LOWO hit rates and regret figures, recomputed using documented definitions.
+10. The energy measurement limitations and the assumptions used in the sensitivity analysis.
+
+### Requirements
+
+- Derive values from the original CSVs or documented analysis outputs; do not hardcode expected results as if they were measured results.
+- Include units, metric definitions, sample sizes and the evaluation protocol wherever applicable.
+- Record random seeds and bootstrap settings.
+- Make the script deterministic.
+- Include a generation timestamp and, preferably, source-file hashes or other provenance metadata.
+- Include checks that compare expected counts with the actual data. If a check fails, report the discrepancy instead of silently replacing it.
+- Ensure the JSON is valid and easy for another script to consume.
+
+**Rule for the paper:** Numerical claims should be copied from `results_summary.json` after it is generated and validated, not manually transcribed from old terminal outputs or previous drafts.
+
+---
+
+## Task 6 — Reproducibility, Documentation and Standardized Logging
+
+### A. `requirements.txt`
+
+Create or update a requirements file listing the Python dependencies needed to reproduce the analysis and figures. Include the relevant versions where compatibility matters.
+
+At minimum, account for the dependencies actually used by the scripts, such as:
+
+- NumPy
+- pandas
+- scikit-learn
+- SciPy
+- Matplotlib
+- joblib
+- SHAP
+- XGBoost
+- CodeCarbon
+
+Inspect the actual imports and existing environment before finalizing the list. Do not include unused packages merely for completeness. Document the tested Python version.
+
+### B. `README.md`
+
+Provide a clear project guide covering:
+
+1. Project purpose and research questions.
+2. Member A, B and C responsibilities.
+3. Repository structure and data-file descriptions.
+4. Python version and environment setup.
+5. Installation instructions.
+6. The exact analysis run order.
+7. Commands for running the significance tests, confidence intervals, sensitivity analysis, figures and results-summary script.
+8. How to reproduce the final outputs.
+9. The evaluation methodology, regret definitions and statistical assumptions.
+10. Limitations, including energy measurement, GPU energy availability, the limited number of workloads and the lack of demonstrated scheduler superiority over Joblib.
+
+A new team member should be able to follow the README without relying on private chat instructions.
+
+### C. Single orchestration script
+
+Create `run_all.py` to execute the reproducible analysis pipeline in a defined order.
+
+It should:
+
+1. Check required input files and dependencies.
+2. Run the relevant validation checks.
+3. Build or verify the unified dataset as appropriate.
+4. Run the statistical analyses.
+5. Generate the sensitivity breakdown.
+6. Generate the research figures.
+7. Generate `results_summary.json`.
+8. Exit with a nonzero status if a required step fails.
+9. Print clear progress and output locations.
+
+Do not automatically rerun the expensive Member A or Member B experiments. The orchestration script should operate on the existing raw benchmark CSVs by default. Any command that launches expensive experiments must be explicitly separate and documented.
+
+### D. Standardize future benchmark logging
+
+Update the shared benchmark-output schema so future Member A and Member B runs record:
+
+- CodeCarbon version
+- CPU energy
+- RAM energy
+- GPU energy
+- Total energy
+- Energy units
+- Measurement backend or tracking mode, where available
+- Whether each component was directly measured, estimated, unsupported or unavailable
+- Runtime
+- Strategy
+- Requested and effective core counts
+- Workload and model identifiers
+- Configuration and repeat identifiers
+- Run status and error information
+- Relevant Python, SHAP and model-library versions
+
+Represent unsupported or unavailable component measurements explicitly. Do not silently replace missing GPU energy with a measured zero or interpret estimated RAM energy as directly measured energy.
+
+Preserve compatibility with existing CSVs. Historical rows that lack diagnostic fields should be labelled as unavailable or unknown rather than retrospectively assigned values that were never recorded.
+
+---
+
+## Additional requirements applying to all tasks
+
+### 1. Preserve existing research data
+
+- Do not overwrite the original Member A or Member B benchmark CSVs.
+- Do not overwrite existing Member C outputs without preserving the originals or making the changes auditable.
+- Keep corrected analyses in clearly named new files.
+- Do not fabricate missing observations or configurations.
+
+### 2. Inspect before implementing
+
+Read the relevant existing scripts and CSV schemas before writing new code. Reuse the current definitions of regret, hit rate, workload identifiers and EDP wherever appropriate. If an existing definition is incorrect or inconsistent, document the issue and explain the correction.
+
+### 3. Statistical correctness
+
+- Keep workload-level dependence in mind when resampling.
+- Use paired comparisons where the observations are genuinely matched.
+- Document missing observations, zero differences, ties and excluded data.
+- Use consistent eligibility rules across methods.
+- Report effect sizes and confidence intervals alongside p-values.
+- Avoid unsupported causal claims or claims of generalization beyond the evaluated benchmark space.
+
+### 4. Reproducibility
+
+- Fix and record random seeds.
+- Record the number of bootstrap resamples.
+- Make all outputs regenerable from scripts.
+- Keep analysis and plotting code under version control.
+- Use descriptive filenames and stable column names.
+- Avoid manual editing of calculated results.
+
+### 5. Validation and handover
+
+Before marking the work complete:
+
+- Run the full analysis pipeline from a clean or documented environment.
+- Confirm all expected output files exist.
+- Verify that the reported counts reconcile across Member A, Member B and Member C.
+- Confirm that the statistical tests use the intended workload-level observations.
+- Verify that all figures are generated successfully in PNG and PDF formats.
+- Check that `results_summary.json` agrees with the generated tables.
+- Provide a short handover summary listing files changed, commands executed, key results, known limitations and any remaining issues.
+
+### 6. GitHub workflow
+
+- Work on a separate branch rather than directly modifying `main`.
+- Commit each logical task separately.
+- Preserve the existing benchmark data and unrelated working-tree changes.
+- Push the branch and provide the commit hash for review.
+- Do not merge until the analysis, tests and outputs have been checked.
+
+---
+
+## Definition of completion
+
+The task is complete when another team member can clone the repository, install the documented dependencies, run the analysis pipeline against the existing benchmark data, regenerate the statistical results and figures, and obtain a consistent `results_summary.json` without manually editing results or rerunning the expensive experiments.
+
+The final paper must report the findings supported by the evidence—even if the learned scheduler does not significantly outperform Joblib—and clearly disclose the limitations of the energy measurements and evaluation scope.

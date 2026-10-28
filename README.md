@@ -433,6 +433,35 @@ Member B is implemented as a separate benchmark track rather than replacing Memb
 
 The two tracks remain independently reproducible while providing compatible scheduler-oriented outputs.
 
+## Reproducing the completed research analysis
+
+This repository compares runtime, CodeCarbon total energy and their product (EDP) for TreeSHAP (Member A) and KernelSHAP (Member B), then evaluates whether a scheduler can select a useful parallel strategy. Member A owns the TreeSHAP benchmark, Member B the KernelSHAP benchmark, and Member C the unified dataset, statistical validation, scheduler evaluation and reproducibility outputs.
+
+### Environment and run order
+
+Use Python 3.12 (the pipeline was run with Python 3.12 in the supplied environment). Create and activate a virtual environment, then install dependencies with `python -m pip install -r requirements.txt`.
+
+The source observations are `results/memberA/results.csv` and `results/memberB/kernelshap_benchmark.csv`. The reproducible pipeline consumes existing Member C outputs and never launches either expensive benchmark. From the repository root, run:
+
+```bash
+python scripts/memberC/audit_results.py
+python scripts/memberC/finalize_research.py
+# Or run both steps with input checks:
+python run_all.py
+```
+
+The finalizer writes paired scheduler/Joblib data and statistics, fixed-strategy confidence intervals, sensitivity breakdowns and flip details, four PNG/PDF figure pairs under `results/memberC/plots/`, `results/memberC/memberc_research_report.md`, and root-level `results_summary.json`. To rebuild upstream derived tables when raw CSVs change, run `scripts/memberC/build_unified_dataset.py`, `scripts/memberC/build_edp_dataset.py`, then the scheduler protocol/evaluation scripts as appropriate. Those steps may retrain/evaluate scheduler models but do not launch SHAP benchmark runs.
+
+### Metric definitions and interpretation
+
+EDP is runtime in seconds multiplied by total energy in joules (J·s), calculated per run before aggregation. Regret is measured median EDP divided by the observed minimum EDP for the same workload/core decision point, minus one. Hit rate is the fraction of points where a method selects the observed minimum-EDP strategy. Strategies absent at a decision point are not fabricated. Confidence intervals first average available decisions within workload, then resample workloads 10,000 times; seeds are recorded in the output CSVs. Scheduler-versus-Joblib inference pairs each workload's mean across its four core decisions, uses a percentile bootstrap interval and a two-sided Wilcoxon signed-rank test (zero differences omitted; tied absolute differences receive average ranks).
+
+The benchmark oracle is computed from observed outcomes. It is an evaluation reference, not information available in advance for a new workload. The nested LOWO results comprise 18 held-out workloads and 72 correlated decisions; the folds are not independent retrainings of the complete development process. The current evaluation does not demonstrate scheduler superiority over Joblib, and a nonsignificant test does not prove equivalence.
+
+Energy estimates are CodeCarbon totals with limited historical component diagnostics. GPU energy was unsupported or unavailable in relevant runs and must not be read as measured zero. The 10 W RAM sensitivity adjustment (`E_adj = E_measured − 10 W × runtime`) is hypothetical; nonpositive adjusted energy is excluded from adjusted winner ranking. It is not a correction to historical measurements or measured CPU-only energy. Older Member A rows lack component diagnostics; their historical component values remain unknown.
+
+`results_summary.json` records raw counts, quality checks and source hashes. It is the source of numerical claims; do not manually transcribe claims from older console output.
+
 Current Project Status
 
 ✅Member A benchmark

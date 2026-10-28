@@ -13,6 +13,7 @@ IMPORTANT:
 
 import atexit
 import csv
+import importlib.metadata
 import socket
 import time
 import uuid
@@ -26,6 +27,13 @@ CSV_FIELDS = [
     "run_id", "track", "strategy", "model", "n_rows", "n_features",
     "background_size", "n_cores", "repeat_idx", "wall_time_sec",
     "energy_joules", "machine_id", "timestamp",
+    # Diagnostic schema for new Member A records. Historical rows are left blank.
+    "runtime_sec", "requested_cores", "effective_cores", "workload_id",
+    "configuration_id", "run_status", "error", "energy_units",
+    "energy_backend", "tracking_mode", "cpu_energy_joules", "ram_energy_joules",
+    "gpu_energy_joules", "total_energy_joules", "cpu_energy_status",
+    "ram_energy_status", "gpu_energy_status", "python_version", "codecarbon_version",
+    "shap_version", "model_library_version",
 ]
 
 DEFAULT_CSV_PATH = (
@@ -274,9 +282,14 @@ def run_and_measure(
     tracker.start_task(task_name)
 
     start_time = time.perf_counter()
+    run_error = None
+    run_exception = None
 
     try:
         fn()
+    except Exception as exc:
+        run_exception = exc
+        run_error = f"{type(exc).__name__}: {exc}"
 
     finally:
         wall_time_sec = time.perf_counter() - start_time
@@ -300,9 +313,33 @@ def run_and_measure(
         "energy_joules": energy_joules,
         "machine_id": get_machine_id(),
         "timestamp": get_timestamp(),
+        "runtime_sec": wall_time_sec,
+        "requested_cores": n_cores,
+        "effective_cores": n_cores,
+        "workload_id": f"{track}|{model}|{n_rows}" if background_size is None else f"{track}|{model}|{n_features}|{n_rows}|{background_size}",
+        "configuration_id": f"{track}|{model}|{n_rows}|{strategy}|{n_cores}|{repeat_idx}",
+        "run_status": "failed" if run_error else "success",
+        "error": run_error or "",
+        "energy_units": "joules",
+        "energy_backend": "CodeCarbon",
+        "tracking_mode": "unknown",
+        "cpu_energy_joules": None,
+        "ram_energy_joules": None,
+        "gpu_energy_joules": None,
+        "total_energy_joules": energy_joules,
+        "cpu_energy_status": "unavailable",
+        "ram_energy_status": "unavailable",
+        "gpu_energy_status": "unsupported_or_unavailable",
+        "python_version": __import__("platform").python_version(),
+        "codecarbon_version": _package_version("codecarbon"),
+        "shap_version": _package_version("shap"),
+        "model_library_version": (_package_version("xgboost") if "xgb" in str(model).lower() else _package_version("scikit-learn")),
     }
 
     _append_row(row, csv_path)
+
+    if run_error:
+        raise run_exception
 
     return row
 
@@ -314,14 +351,39 @@ def _append_row(row, csv_path):
     csv_path.parent.mkdir(parents=True, exist_ok=True)
 
     file_exists = csv_path.exists()
+    fieldnames = list(CSV_FIELDS)
+
+    # Preserve old rows while extending an old-format Member A CSV on the first
+    # append using the diagnostic schema. Missing historical fields stay blank.
+    if file_exists and csv_path.stat().st_size:
+        with open(csv_path, "r", newline="") as existing:
+            reader = csv.DictReader(existing)
+            old_fields = reader.fieldnames or []
+            old_rows = list(reader)
+        if old_fields != CSV_FIELDS:
+            fieldnames = list(dict.fromkeys(old_fields + CSV_FIELDS))
+            with open(csv_path, "w", newline="") as migrated:
+                writer = csv.DictWriter(migrated, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(old_rows)
+            file_exists = True
+        else:
+            fieldnames = old_fields
 
     with open(csv_path, "a", newline="") as f:
         writer = csv.DictWriter(
             f,
-            fieldnames=CSV_FIELDS,
+            fieldnames=fieldnames,
         )
 
         if not file_exists:
             writer.writeheader()
 
         writer.writerow(row)
+
+
+def _package_version(name):
+    try:
+        return importlib.metadata.version(name)
+    except importlib.metadata.PackageNotFoundError:
+        return None
